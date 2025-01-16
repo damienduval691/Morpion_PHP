@@ -11,16 +11,18 @@
 **/
 
 class Player{
-    public $name;
-    public $sign;
-    public $color;
-    public $id;
+    private $name;
+    private $sign;
+    private $color;
+    private $id;
+    private $nbWin;
 
     public function __construct($name, $sign, $color, $id){
         $this->name     = $name;
         $this->sign     = $sign;
         $this->color    = $color;
         $this->id       = $id;
+        $this->nbWin    = 0;
     }
 
     public function __destruct(){
@@ -34,6 +36,16 @@ class Player{
     }
     public function getColor(){
         return $this->color;
+    }
+    public function getWin(){
+        return $this->nbWin;
+    }
+
+    public function getInfo(){
+        return $this->name." ".$this->sign." ".$this->id;
+    }
+    public function incrementWin(){
+        $this->nbWin++;
     }
 }
 

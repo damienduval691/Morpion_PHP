@@ -16,53 +16,71 @@ define("RAZ_COLOR", "\033[0m");
 displayMenu();
 
 function startGame($gameMode){
-    $grille = initGrille();
+    $grid = initGrille();
 
     switch($gameMode){
         case cst_1v1:
+            gamePlayers(false, $grid);
             break;
         case cst_1v13g:
+            gamePlayers(true, $grid);
             break;
         case cst_1vBot:
             break;
         default:
     }
+    displayMenu();
+}
 
-    echo PHP_EOL."Avant de commencer, veuillez entre quelques informations des jouers.".PHP_EOL;
-    echo str_repeat("-", 40).PHP_EOL;
-    echo "Joueur 1 : ".PHP_EOL;
+function gamePlayers($multiGame, $grid){
 
-    $name   = readline("Le nom du joueur 1 : ");
-    echo PHP_EOL."Ensuite, choisissez le signe du joueur 1 : X ou O : ".PHP_EOL;
-    
-    do{
-        $sign_choice = readline("Le signe du joueur 1 : ");
-    }while($sign_choice !== 'X' && $sign_choice !== 'O');
+    $round_max = $multiGame?3:1;
+    $round = 1;
 
-    echo PHP_EOL."Pour finir, veuillez choisir la couleur : B = Bleu, R = Rouge, V = Vert : ".PHP_EOL;
+    list($player1, $player2) = setPlayers(false);
+
+    echo PHP_EOL.$player1->getInfo()." ".$player2->getInfo();
 
     do{
-        $color_choice = strtoupper(readline("La couleur du joueur 1 : "));
-        switch($color_choice){
-            case 'R':
-                $color = ROUGE;
+        $grid = initGrille();
+        $player = randFirst()==1?$player1:$player2;
+        while(true){  
+            echo PHP_EOL."C'est à ".$player->getName()." de jouer. (".$player->getColor().$player->getSign().RAZ_COLOR.")".PHP_EOL;
+            $caseEmpty = true; //$caseEmpty = true si la case est vide (donc c'est possible) = false si la case est remplie
+            do{
+                displayGrille($grid);
+                if(!$caseEmpty)
+                    echo "La case est déjà prise.".PHP_EOL;
+                PHP_EOL.$choix = readline("Votre choix : ");
+                $caseEmpty = isCaseEmpty($grid, $choix);
+            }while(!$caseEmpty);
+            $grid = fileGrid($player,$choix,$grid);
+            if(verificationVictoire($grid,$player)){
+                displayGrille($grid);
+                echo PHP_EOL. $player->getName(). " a gagné la partie !".PHP_EOL;
+                $player->incrementWin();
                 break;
-            case 'V' :
-                $color = VERT;
-                break; 
-            case 'B' :
-                $color = BLEU;
-                break; 
+            }elseif (isGridFull($grid)) {
+                displayGrille($grid);
+                echo "Match nul".PHP_EOL;
+                break;
+            }else{
+                $player=switchPlayer($player, $player1, $player2);
+            }
         }
-    }while($color_choice !== 'R' && $color_choice !== 'V' && $color_choice !== 'B');
+        $round++;
+    }while($round<=$round_max);
 
-    $player1 = new Player($name, $sign_choice, $color, 1);
+    $player = $player1->getWin()>$player2->getWin()?$player1:$player2;
 
-    if($gameMode === cst_1vBot){
-        $player2 = new Player("Ordinateur", ($sign_choice==='X')?"O" : 'X', MAGENTA, 2);
-    } else{
+    echo PHP_EOL.$player->getName()." a gagné le jeu avec ".$player->getWin()." partie(s) gagnée(s) !".PHP_EOL;
+    
+}
 
-    }
+function gamePlayerBot($grid){
+/**
+ * faire le choix : mode hard ou mode impossible
+ */
 }
 
 //Function d'affichage du choix du mode de jeu
@@ -210,23 +228,22 @@ function randFirst(){
 //Fonction d'initialisation de la grille de jeu
 function initGrille(){
     //Initialisaiton de la grille en 3x3
-    $grille = [
+    $grid = [
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"]
     ];  
 
-    return $grille;
+    return $grid;
 }   
 
 //Fonction d'affichage de la grille
-function displayGrille($grille) {
+function displayGrille($grid) {
     echo "\n";
-    //print_r($grille);
     for ($i = 0; $i < 3; $i++) {
         for ($j = 0; $j < 3; $j++) {
             // Affiche la case ou un espace vide
-            echo " " . ($grille[$i][$j] !== "" ? $grille[$i][$j] : " ");
+            echo " " . ($grid[$i][$j] !== "" ? $grid[$i][$j] : " ");
             if ($j < 2) {
                 echo " |"; // Barre verticale entre les colonnes
             }
@@ -239,44 +256,46 @@ function displayGrille($grille) {
     echo "\n";
 }
 
-function fileGrid($player, $chosenNumber,$grille){
+function fileGrid($player, $chosenNumber,$grid){
 
-    $sign_color = $player->color. $player->sign. RAZ_COLOR;
+    $sign_color = $player->getColor(). $player->getSign(). RAZ_COLOR;
 
     switch($chosenNumber){
         case 1:
-            $grille[0][0] = $sign_color;
+            $grid[0][0] = $sign_color;
             break;
         case 2:
-            $grille[0][1] = $sign_color;
+            $grid[0][1] = $sign_color;
             break;
         case 3:
-            $grille[0][2] = $sign_color;
+            $grid[0][2] = $sign_color;
             break;
         case 4:
-            $grille[1][0] = $sign_color;
+            $grid[1][0] = $sign_color;
             break;
         case 5:
-            $grille[1][1] = $sign_color;
+            $grid[1][1] = $sign_color;
             break;
         case 6:
-            $grille[1][2] = $sign_color;
+            $grid[1][2] = $sign_color;
             break;
         case 7:
-            $grille[2][0] = $sign_color;
+            $grid[2][0] = $sign_color;
             break;
         case 8:
-            $grille[2][1] = $sign_color;
+            $grid[2][1] = $sign_color;
             break;
         case 9:
-            $grille[2][2] = $sign_color;
+            $grid[2][2] = $sign_color;
             break;
     }
+
+    return $grid;
 }
 
-function isGridFull($grille){
+function isGridFull($grid){
 
-    foreach($grille as $ligne){
+    foreach($grid as $ligne){
         foreach($ligne as $case){
             if(!(str_contains("X",$case) || str_contains("O", $case))){
                 return false;
@@ -287,70 +306,137 @@ function isGridFull($grille){
 
 }
 
-function isCaseEmpty($grille, $chosenNumber){
-
-    $grille = [
-        ["1", "2", "3"],
-        ["4", "5", "6"],
-        ["7", "8", "9"]
-    ];  
+function isCaseEmpty($grid, $chosenNumber){
 
     switch($chosenNumber){
         case 1:
-            return $grille[0][0] == 1;
-            break;
+            return $grid[0][0] == 1;
         case 2:
-            return $grille[0][1] == 2;
-            break;
+            return $grid[0][1] == 2;
         case 3:
-            return $grille[0][2] == 3;
-            break;
+            return $grid[0][2] == 3;
         case 4:
-            return $grille[1][0] == 4;
-            break;
+            return $grid[1][0] == 4;
         case 5:
-            return $grille[1][1] == 5;
-            break;
+            return $grid[1][1] == 5;
         case 6:
-            return $grille[1][2] == 6;
-            break;
+            return $grid[1][2] == 6;
         case 7:
-            return $grille[2][0] == 7;
-            break;
+            return $grid[2][0] == 7;
         case 8:
-            return $grille[2][1] == 8;
-            break;
+            return $grid[2][1] == 8;
         case 9:
-            return $grille[2][2] == 9;
-            break;
+            return $grid[2][2] == 9;
         default:
             return false;
     }
 }
 
-function verificationVictoire($grille, $symbole, $player) {
-    $symbole = $player->color. $player->sign. RAZ_COLOR;
+function setPlayers($bot_on) {
+    echo PHP_EOL . "Avant de commencer, veuillez entrer quelques informations des joueurs." . PHP_EOL;
+    echo str_repeat("-", 40) . PHP_EOL;
+    echo "Joueur 1 : " . PHP_EOL;
+
+    // Saisie du nom du joueur 1
+    $name1 = readline("Le nom du joueur 1 : ");
+
+    // Choix du signe du joueur 1
+    echo PHP_EOL . "Ensuite, choisissez le signe du joueur 1 : X ou O : " . PHP_EOL;
+    do {
+        $sign_choice1 = readline("Le signe du joueur 1 : ");
+    } while ($sign_choice1 !== 'X' && $sign_choice1 !== 'O');
+
+    // Couleurs disponibles (sans formatage)
+    $available_colors = [
+        'R' => 'Rouge',
+        'V' => 'Vert',
+        'B' => 'Bleu'
+    ];
+
+    // Choix de la couleur du joueur 1
+    echo PHP_EOL . "Pour finir, veuillez choisir la couleur parmi les options disponibles : " . PHP_EOL;
+    do {
+        // Afficher les couleurs disponibles avec leur code d'échappement
+        echo "Options : ";
+        foreach ($available_colors as $key => $color_name) {
+            $color_constant = constant(strtoupper($color_name)); // Associe la constante (ROUGE, VERT, BLEU)
+            echo "$key = $color_constant$color_name\033[0m ";
+        }
+        echo PHP_EOL;
+
+        $color_choice1 = strtoupper(readline("La couleur du joueur 1 : "));
+    } while (!array_key_exists($color_choice1, $available_colors));
+
+    // Associer la constante correspondant au choix
+    $color1 = constant(strtoupper($available_colors[$color_choice1]));
+    unset($available_colors[$color_choice1]); // Retirer la couleur choisie
+
+    // Création du joueur 1
+    $player1 = new Player($name1, $sign_choice1, $color1, 1);
+
+    if ($bot_on) {
+        // Si le bot est activé
+        $player2 = new Player("Ordinateur", ($sign_choice1 === 'X') ? 'O' : 'X', MAGENTA, 2);
+    } else {
+        echo PHP_EOL . "Joueur 2 : " . PHP_EOL;
+
+        // Saisie du nom du joueur 2
+        $name2 = readline("Le nom du joueur 2 : ");
+
+        // Choix du signe du joueur 2
+        $sign_choice2 = ($sign_choice1 === 'X') ? 'O' : 'X';
+        echo PHP_EOL . "Le signe du joueur 2 sera automatiquement : $sign_choice2" . PHP_EOL;
+
+        // Choix de la couleur du joueur 2
+        echo PHP_EOL . "Choisissez la couleur parmi les options disponibles : " . PHP_EOL;
+        do {
+            // Afficher les couleurs restantes avec leur code d'échappement
+            echo "Options : ";
+            foreach ($available_colors as $key => $color_name) {
+                $color_constant = constant(strtoupper($color_name)); // Associe la constante (ROUGE, VERT, BLEU)
+                echo "$key = $color_constant$color_name\033[0m ";
+            }
+            echo PHP_EOL;
+
+            $color_choice2 = strtoupper(readline("La couleur du joueur 2 : "));
+        } while (!array_key_exists($color_choice2, $available_colors));
+
+        // Associer la constante correspondant au choix
+        $color2 = constant(strtoupper($available_colors[$color_choice2]));
+
+        // Création du joueur 2
+        $player2 = new Player($name2, $sign_choice2, $color2, 2);
+    }
+
+    // Retourner les deux joueurs
+    return [$player1, $player2];
+}
+function switchPlayer($player, $player1, $player2){
+    return ($player===$player1)?$player2:$player1;
+}
+function verificationVictoire($grid, $player) {
+    $symbole = $player->getColor(). $player->getSign(). RAZ_COLOR;
     // Vérifier les alignements horizontaux
     for ($i = 0; $i < 3; $i++) {
-        if ($grille[$i][0] === $symbole && $grille[$i][1] === $symbole && $grille[$i][2] === $symbole) {
+        if ($grid[$i][0] === $symbole && $grid[$i][1] === $symbole && $grid[$i][2] === $symbole) {
             return true; // Victoire horizontale
         }
     }
 
     // Vérifier les alignements verticaux
     for ($j = 0; $j < 3; $j++) {
-        if ($grille[0][$j] === $symbole && $grille[1][$j] === $symbole && $grille[2][$j] === $symbole) {
+        if ($grid[0][$j] === $symbole && $grid[1][$j] === $symbole && $grid[2][$j] === $symbole) {
             return true; // Victoire verticale
         }
     }
 
     // Vérifier la diagonale principale
-    if ($grille[0][0] === $symbole && $grille[1][1] === $symbole && $grille[2][2] === $symbole) {
+    if ($grid[0][0] === $symbole && $grid[1][1] === $symbole && $grid[2][2] === $symbole) {
         return true; // Victoire diagonale principale
     }
 
     // Vérifier la diagonale secondaire
-    if ($grille[0][2] === $symbole && $grille[1][1] === $symbole && $grille[2][0] === $symbole) {
+    if ($grid[0][2] === $symbole && $grid[1][1] === $symbole && $grid[2][0] === $symbole) {
         return true; // Victoire diagonale secondaire
     }
 
@@ -358,9 +444,8 @@ function verificationVictoire($grille, $symbole, $player) {
     return false;
 }
 
-function destroyObjects($player1, $player2){
-    unset($player1);
-    unset($player2);
+function destroyObject($player){
+    unset($player);
 }
 
 ?>
