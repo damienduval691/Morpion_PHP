@@ -4,14 +4,14 @@ require_once 'Joueur.php';
 /** Liste des constantes 
  * Ces constantes servent à définir le mode de jeu et les couleurs
  */
-define("cst_1v1", 1);
-define("cst_1v13g", 2);
-define("cst_1vBot", 3);
-define("ROUGE", "\033[1;31m");
-define("VERT", "\033[1;32m");
-define("BLEU", "\033[1;34m");
-define("MAGENTA", "\033[1;35m");
-define("RAZ_COLOR", "\033[0m");
+define("cst_1v1",   1);             //Constante pour le mode de jeu : 1vs1 en 1 manche
+define("cst_1v13g", 2);             //Constante pour le mode de jeu : 1vs1 en 3 manches
+define("cst_1vBot", 3);             //Constante pour le mode de jeu : 1vs1 contre un bot
+define("ROUGE",     "\033[1;31m");  //Constante pour la couleur ROUGE dans la console (utilisée pour le signe)
+define("VERT",      "\033[1;32m");  //Constante pour la couleur VERT dans la console (utilisée pour le signe)
+define("BLEU",      "\033[1;34m");  //Constante pour la couleur BLEU dans la console (utilisée pour le signe)
+define("MAGENTA",   "\033[1;35m");  //Constante pour la couleur MEGANTA dans la console (utilisée pour le signe) pour le bot notamment
+define("RAZ_COLOR", "\033[0m");     //Constante pour la remise à zéro (pour ne pas rendre en couleur le terminal en entier)
 
 displayMenu();
 
@@ -26,6 +26,7 @@ function startGame($gameMode){
             gamePlayers(true, $grid);
             break;
         case cst_1vBot:
+            gamePlayerBot($grid);
             break;
         default:
     }
@@ -201,7 +202,7 @@ function displayRules() {
         ["symbole, généralement une croix pour l’un et un rond pour l’autre.","LEFT"],
         ["LINE",""],
         ["Déroulement d'une partie","MIDDLE"],
-        ["Vous avez le choix entre trois mode de jeu.","LEFT"],
+        ["Vous avez le choix entre trois modes de jeu.","LEFT"],
         ["Le mode unique consiste en une simple partie en une manche avec deux joueurs.","LEFT"],
         ["Le mode « challenge » se joue en trois manches à deux joueurs. Le joueur qui remporte le plus de manches gagne la partie.","LEFT"],
         ["Le mode contre l'ordinateur se présente sous la forme d'une seule partie au cours de laquelle vous devez le battre.","LEFT"],

@@ -7,6 +7,10 @@
 * Signe du joueur : X / O
 * @param string $color
 * code de la couleur pour le signe à afficher
+* @param int $id
+* Id du joueur afin de savoir qui est le joueur 1 et joueur 2 (au besoin)
+* @param int $nbWin
+* nombre de victoire pour réaliser un compte en fin de jeu
 *
 **/
 
