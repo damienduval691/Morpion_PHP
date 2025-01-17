@@ -15,12 +15,14 @@
 **/
 
 class Player{
+    //Initialisation des attributs
     private $name;
     private $sign;
     private $color;
     private $id;
     private $nbWin;
 
+    //Constructeur de l'object Player
     public function __construct($name, $sign, $color, $id){
         $this->name     = $name;
         $this->sign     = $sign;
@@ -28,10 +30,11 @@ class Player{
         $this->id       = $id;
         $this->nbWin    = 0;
     }
-
+    //Destruction
     public function __destruct(){
     }
     
+    //Fonction pour récupérer les les attributs
     public function getName(){
         return $this->name;
     }
@@ -41,13 +44,17 @@ class Player{
     public function getColor(){
         return $this->color;
     }
-    public function getWin(){
+    public function getnbWin(){
         return $this->nbWin;
     }
-
-    public function getInfo(){
-        return $this->name." ".$this->sign." ".$this->id;
+    public function getId(){
+        return $this->id;
     }
+    //Récupérer les infos globales (hormis les couleurs)
+    public function getInfo(){
+        return $this->name." ".$this->sign." ".$this->nbWin.$this->id;
+    }
+    //Incrémentation du nombre de victoires
     public function incrementWin(){
         $this->nbWin++;
     }
