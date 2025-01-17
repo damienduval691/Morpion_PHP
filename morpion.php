@@ -78,7 +78,7 @@ function gamePlayers($multiGame, $grid){
                 //On vérifie si la case sélectionnée est vide ou non, sinon on affiche une erreur
                 $caseEmpty = isCaseEmpty($grid, $choix);
                 if(!$caseEmpty)
-                    echo "La case est déjà prise.".PHP_EOL;
+                    echo "La case est déjà prise / le choix entré est invalide.".PHP_EOL;
             }while(!$caseEmpty);
 
             //On remplie la grille puis on vérifie s'il y a une victoire, un match nul ou si c'est au prochain joueur de jouer
@@ -155,7 +155,7 @@ function gamePlayerBot($grid){
                         //On vérifie si la case sélectionnée est vide ou non, sinon on affiche une erreur
                         $caseEmpty = isCaseEmpty($grid, $choix);
                         if(!$caseEmpty)
-                            echo "La case est déjà prise.".PHP_EOL;
+                            echo PHP_EOL."La case est déjà prise / le choix entré est invalide.".PHP_EOL;
                     }while(!$caseEmpty);
                     //On remplie la grille puis on vérifie s'il y a une victoire, un match nul ou si c'est au prochain joueur de jouer
                     $grid = fileGrid($player,$choix,$grid);
@@ -191,7 +191,7 @@ function gamePlayerBot($grid){
                         $choix = readline("Votre choix (entrez un chiffre situé dans le tableau) : ");
                         $caseEmpty = isCaseEmpty($grid, $choix);
                         if (!$caseEmpty) {
-                            echo "La case est déjà prise.".PHP_EOL;
+                            echo PHP_EOL."La case est déjà prise / le choix entré est invalide.".PHP_EOL;
                         }
                     } while (!$caseEmpty);
         
