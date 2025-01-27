@@ -308,7 +308,7 @@ function obtainEmptyCases($grid) {
  * Fonction permet de récupérer la meilleure solution pour l'IA
  * @param array $grid
  * Paramètre qui permet de récupérer la grille de jeu
- * @param array $depth
+ * @param int $depth
  * Paramètre qui récupère "la profondeur" de la recherche
  * @param bool $isMaximizingPlayer
  * Paramètre qui permet de savoir si c'est l'IA ou le joueur, dans l'algorithme, qui doit maximiser ses chances
